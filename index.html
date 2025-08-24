@@ -5,60 +5,17 @@
   <title>Love Counter 💖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #ffe6f0;
-      color: #660033;
-      text-align: center;
-      padding: 30px;
-      overflow-x: hidden;
-      position: relative;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(255,105,180,0.4);
-      position: relative;
-      z-index: 1;
-    }
+    body { font-family: Arial, sans-serif; background: #ffe6f0; color: #660033; text-align: center; padding: 30px; overflow-x: hidden; }
+    .container { max-width: 600px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 0 15px rgba(255,105,180,0.4); }
     h1 { color: #ff3399; }
-    input[type="text"] {
-      padding: 10px; margin: 10px; border: 2px solid #ff99cc; border-radius: 10px; width: 80%; font-size: 16px;
-    }
-    button {
-      background: #ff66b2; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.3s;
-    }
+    input[type="text"] { padding: 10px; margin: 10px; border: 2px solid #ff99cc; border-radius: 10px; width: 80%; font-size: 16px; }
+    button { background: #ff66b2; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.3s; }
     button:hover { background: #ff3385; }
-    .box, .result-box {
-      background: #fff0f5; border-radius: 15px; padding: 15px; box-shadow: inset 0 0 10px rgba(255,182,193,0.5);
-      flex: 1; margin: 10px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;
-    }
-    .flex-row {
-      display: flex; justify-content: center; align-items: stretch; margin-top: 20px;
-      max-width: 700px; margin-left: auto; margin-right: auto; position: relative; z-index: 2;
-    }
-    #steps, #reduction {
-      font-family: monospace; white-space: pre-line; text-align: left; font-size: 14px; overflow-y: auto;
-    }
-    .result-box {
-      background: linear-gradient(135deg, #ff66b2, #ff1a75);
-      color: white; font-size: 36px; font-weight: bold; border-radius: 20px; text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      .flex-row { flex-direction: column; }
-      .box, .result-box { width: 90%; margin: 10px auto; height: auto; }
-      button, input[type="text"] { width: 90%; }
-    }
-
-    @media (max-width: 400px) {
-      h1 { font-size: 24px; }
-      .result-box { font-size: 28px; }
-      #steps, #reduction { font-size: 12px; }
-    }
+    .box, .result-box { background: #fff0f5; border-radius: 15px; padding: 15px; box-shadow: inset 0 0 10px rgba(255,182,193,0.5); flex: 1; margin: 10px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    .flex-row { display: flex; justify-content: center; align-items: stretch; margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; }
+    #steps, #reduction { font-family: monospace; white-space: pre-line; text-align: left; font-size: 14px; overflow-y: auto; }
+    .result-box { background: linear-gradient(135deg, #ff66b2, #ff1a75); color: white; font-size: 36px; font-weight: bold; border-radius: 20px; text-align: center; }
+    @media (max-width: 600px) { .flex-row { flex-direction: column; } .box, .result-box { width: 90%; margin: 10px auto; height: auto; } button, input[type="text"] { width: 90%; } }
   </style>
 </head>
 <body>
@@ -94,6 +51,7 @@
         return;
       }
 
+      // --- Love Calculation ---
       let combined = nameA + nameB;
       let letters = [];
       let counts = [];
@@ -135,9 +93,9 @@
       document.getElementById("reduction").innerText = reductionText;
       document.getElementById("heartPercent").innerText = percent + "%";
 
-      // Redirect to second site
-      const otherSiteURL = `secondsite.html?nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}&percent=${percent}`;
-      window.location.href = otherSiteURL;
+      // --- Redirect to your 2nd GitHub site ---
+      const resultSite = `https://cavxin.github.io/resulton/?nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}&percent=${percent}`;
+      window.location.href = resultSite;
     }
   </script>
 </body>
