@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Love Counter 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6f0;
+      color: #660033;
+      text-align: center;
+      padding: 30px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(255,105,180,0.4);
+      position: relative;
+      z-index: 1;
+    }
+    h1 { color: #ff3399; }
+    input[type="text"] {
+      padding: 10px; margin: 10px; border: 2px solid #ff99cc; border-radius: 10px; width: 80%; font-size: 16px;
+    }
+    button {
+      background: #ff66b2; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.3s;
+    }
+    button:hover { background: #ff3385; }
+    .box, .result-box {
+      background: #fff0f5; border-radius: 15px; padding: 15px; box-shadow: inset 0 0 10px rgba(255,182,193,0.5);
+      flex: 1; margin: 10px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;
+    }
+    .flex-row {
+      display: flex; justify-content: center; align-items: stretch; margin-top: 20px;
+      max-width: 700px; margin-left: auto; margin-right: auto; position: relative; z-index: 2;
+    }
+    #steps, #reduction {
+      font-family: monospace; white-space: pre-line; text-align: left; font-size: 14px; overflow-y: auto;
+    }
+    .result-box {
+      background: linear-gradient(135deg, #ff66b2, #ff1a75);
+      color: white; font-size: 36px; font-weight: bold; border-radius: 20px; text-align: center;
+    }
+
+    /* Shamrocks */
+    .shamrock {
+      position: absolute;
+      width: 60px;
+      z-index: 0;
+      animation: float 6s ease-in-out infinite;
+      pointer-events: auto;
+    }
+    .spin {
+      width: 100%;
+      height: 100%;
+      animation: rotate 8s linear infinite;
+      transform-origin: center;
+    }
+    .shamrock-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .shamrock-img.pop {
+      animation: clickPop 260ms ease-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-15px); }
+    }
+    @keyframes rotate {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes clickPop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(0.75); }
+      100% { transform: scale(1); }
+    }
+
+    .luck-text {
+      position: absolute;
+      font-size: 18px;
+      font-weight: bold;
+      color: #009933;
+      animation: rise 1s ease forwards;
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes rise {
+      0%   { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 600px) {
+      .flex-row {
+        flex-direction: column;
+      }
+      .box, .result-box {
+        width: 90%;
+        margin: 10px auto;
+        height: auto;
+      }
+      button, input[type="text"] {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 400px) {
+      h1 { font-size: 24px; }
+      .result-box { font-size: 28px; }
+      #steps, #reduction { font-size: 12px; }
+      .luck-text { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💖 Love Counter 💖</h1>
+    <p>Enter names to see your love percentage!</p>
+    <input id="nameA" type="text" placeholder="Your Name">
+    <br>
+    <input id="nameB" type="text" placeholder="Your Crush">
+    <br>
+    <button onclick="calculateLove()">Calculate 💕</button>
+
+    <div class="flex-row">
+      <div class="box">
+        <h3>Initial Counts</h3>
+        <div id="steps"></div>
+      </div>
+
+      <div class="result-box" id="heartPercent">--%</div>
+
+      <div class="box">
+        <h3>Reduction Steps</h3>
+        <div id="reduction"></div>
+      </div>
+    </div>
+
+    <!-- Language selector -->
+    <div style="margin-top:20px;">
+      <label for="languageSelect">🌐 Language: </label>
+      <select id="languageSelect" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    function calculateLove(){
+      let nameA = document.getElementById('nameA').value.trim().toUpperCase();
+      let nameB = document.getElementById('nameB').value.trim().toUpperCase();
+      if(!nameA || !nameB){
+        alert("Please enter both names!");
+        return;
+      }
+
+      let combined = nameA + nameB;
+      let letters = [];
+      let counts = [];
+
+      for (let char of combined){
+        if (/[A-Z]/.test(char)){
+          if (!letters.includes(char)){
+            let count = (nameA+nameB).split(char).length-1;
+            letters.push(char);
+            counts.push(count);
+          }
+        }
+      }
+
+      let stepsText = "";
+      for (let i=0;i<letters.length;i++){
+        stepsText += letters[i] + " → " + counts[i] + (counts[i] === 1 ? " time" : " times") + "\n";
+      }
+      document.getElementById("steps").innerText = stepsText;
+
+      let reductionText = "Seed digits: " + counts.join("") + "\n";
+      reductionText += "Reduction steps\n";
+
+      let stepIndex = 0;
+      reductionText += stepIndex + ". " + counts.join("") + "  (start)\n";
+
+      while (counts.length > 2){
+        stepIndex++;
+        let next = [];
+        for (let i=0;i<Math.floor(counts.length/2);i++){
+          next.push((counts[i] + counts[counts.length-1-i]) % 10);
+        }
+        if (counts.length % 2 === 1){
+          next.splice(counts.length/2,0,counts[Math.floor(counts.length/2)]);
+        }
+        counts = next;
+        reductionText += stepIndex + ". " + counts.join("") + (counts.length<=2 ? "  (final)" : "") + "\n";
+      }
+
+      let percent = counts.join("");
+      document.getElementById("reduction").innerText = reductionText;
+      document.getElementById("heartPercent").innerText = percent + "%";
+    }
+
+    function spawnShamrocks() {
+      const shamrockUrl = "https://raw.githubusercontent.com/cavxin/shamrocks/main/shamrock.png";
+      const count = 3 + Math.floor(Math.random() * 3);
+      const container = document.querySelector('.container');
+      const cRect = container.getBoundingClientRect();
+      const pageWidth = document.documentElement.scrollWidth;
+      const pageHeight = Math.max(
+        document.body.scrollHeight, document.documentElement.scrollHeight,
+        document.body.offsetHeight, document.documentElement.offsetHeight
+      );
+
+      for (let i = 0; i < count; i++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'shamrock';
+        const size = Math.min(40 + Math.random() * 60, window.innerWidth / 5);
+        wrap.style.width = size + 'px';
+        wrap.style.height = size + 'px';
+
+        const leftBandMaxX = Math.max(10, cRect.left - size - 20);
+        const rightBandMinX = Math.min(pageWidth - size - 10, cRect.right + 20);
+        const side = Math.random() < 0.5 ? 'left' : 'right';
+        let x = side === 'left' ? Math.random() * (leftBandMaxX - 10) + 10 : Math.random() * (pageWidth - size - rightBandMinX) + rightBandMinX;
+
+        const minY = Math.max(10, window.scrollY + cRect.top - 40);
+        const maxY = Math.min(pageHeight - size - 10, window.scrollY + cRect.bottom - size + 40);
+        const y = minY + Math.random() * Math.max(20, maxY - minY);
+
+        wrap.style.left = x + 'px';
+        wrap.style.top  = y + 'px';
+
+        const spin = document.createElement('div');
+        spin.className = 'spin';
+
+        const img = document.createElement('img');
+        img.className = 'shamrock-img';
+        img.src = shamrockUrl;
+        img.alt = 'Shamrock';
+
+        img.addEventListener('click', (e) => {
+          img.classList.remove('pop');
+          void img.offsetWidth;
+          img.classList.add('pop');
+
+          const luck = document.createElement('div');
+          luck.className = 'luck-text';
+          luck.textContent = 'Luck +1';
+          luck.style.left = (e.pageX - 25) + 'px';
+          luck.style.top  = (e.pageY - 20) + 'px';
+          document.body.appendChild(luck);
+          setTimeout(() => luck.remove(), 1000);
+        });
+
+        spin.appendChild(img);
+        wrap.appendChild(spin);
+        document.body.appendChild(wrap);
+      }
+    }
+
+    const languages = {
+      en: { title:"💖 Love Counter 💖", description:"Enter names to see your love percentage!", nameA:"Your Name", nameB:"Your Crush", button:"Calculate 💕", initialCounts:"Initial Counts", reductionSteps:"Reduction Steps" },
+      es: { title:"💖 Contador de Amor 💖", description:"¡Ingresa los nombres para ver tu porcentaje de amor!", nameA:"Tu Nombre", nameB:"Tu Crush", button:"Calcular 💕", initialCounts:"Conteos Iniciales", reductionSteps:"Pasos de Reducción" },
+      fr: { title:"💖 Compteur d'Amour 💖", description:"Entrez les noms pour voir votre pourcentage d'amour !", nameA:"Votre Nom", nameB:"Votre Crush", button:"Calculer 💕", initialCounts:"Comptes Initiaux", reductionSteps:"Étapes de Réduction" },
+      zh: { title:"💖 爱情计算器 💖", description:"输入名字查看你们的爱情百分比！", nameA:"你的名字", nameB:"你的暗恋", button:"计算 💕", initialCounts:"初始计数", reductionSteps:"缩减步骤" }
+    };
+
+    function changeLanguage() {
+      const lang = document.getElementById('languageSelect').value;
+      const dict = languages[lang];
+      document.querySelector('h1').innerText = dict.title;
+      document.querySelector('.container p').innerText = dict.description;
+      document.getElementById('nameA').placeholder = dict.nameA;
+      document.getElementById('nameB').placeholder = dict.nameB;
+      document.querySelector('button').innerText = dict.button;
+      const boxes = document.querySelectorAll('.box h3');
+      boxes[0].innerText = dict.initialCounts;
+      boxes[1].innerText = dict.reductionSteps;
+    }
+
+    // Run on load
+    spawnShamrocks();
+  </script>
+</body>
+</html>
