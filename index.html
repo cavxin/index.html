@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body { font-family: Arial,sans-serif; background:#ffe6f0; color:#660033; text-align:center; padding:30px;}
+.warning { color: #cc0000; font-weight: bold; margin-bottom: 10px; }
 .language-switch { margin-bottom: 20px; font-size:16px; }
 .container { max-width:600px; margin:auto; background:white; border-radius:20px; padding:20px; box-shadow:0 0 15px rgba(255,105,180,0.4);}
 h1{color:#ff3399;}
@@ -34,7 +35,10 @@ const db = firebase.firestore();
 </head>
 <body>
 
-<!-- Language selector at the top -->
+<!-- Warning at the top -->
+<div class="warning" id="warningMsg">⚠️ Works only with English letters!</div>
+
+<!-- Language selector -->
 <div class="language-switch">
   <label for="langSelect">Language: </label>
   <select id="langSelect" onchange="changeLanguage()">
@@ -57,13 +61,17 @@ const translations = {
     title: "💖 Love Counter 💖",
     nameA: "Your Name",
     nameB: "Your Crush",
-    button: "Calculate 💕"
+    button: "Calculate 💕",
+    warning: "⚠️ Works only with English letters!",
+    alertEmpty: "Please enter both names!"
   },
   zh: {
     title: "💖 爱情计算器 💖",
     nameA: "你的名字",
     nameB: "你的心仪对象",
-    button: "计算 💕"
+    button: "计算 💕",
+    warning: "⚠️ 仅支持英文名字！",
+    alertEmpty: "请输入两个名字！"
   }
 };
 
@@ -73,12 +81,14 @@ function changeLanguage() {
   document.getElementById("nameA").placeholder = translations[lang].nameA;
   document.getElementById("nameB").placeholder = translations[lang].nameB;
   document.getElementById("calcBtn").innerText = translations[lang].button;
+  document.getElementById("warningMsg").innerText = translations[lang].warning;
 }
 
 function calculateLove(){
   let nameA = document.getElementById('nameA').value.trim();
   let nameB = document.getElementById('nameB').value.trim();
-  if(!nameA || !nameB){ alert("Please enter both names!"); return; }
+  const lang = document.getElementById("langSelect").value;
+  if(!nameA || !nameB){ alert(translations[lang].alertEmpty); return; }
 
   // Love calculation
   let combined = nameA + nameB;
