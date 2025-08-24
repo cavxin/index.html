@@ -1,87 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Love Counter 💖</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial, sans-serif; background: #ffe6f0; color: #660033; text-align: center; padding: 30px; }
-    .container { max-width: 600px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 0 15px rgba(255,105,180,0.4); }
-    h1 { color: #ff3399; }
-    input[type="text"] { padding: 10px; margin: 10px; border: 2px solid #ff99cc; border-radius: 10px; width: 80%; font-size: 16px; }
-    button { background: #ff66b2; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-    button:hover { background: #ff3385; }
-    .result-box { background: linear-gradient(135deg, #ff66b2, #ff1a75); color: white; font-size: 36px; font-weight: bold; border-radius: 20px; text-align: center; margin: 20px 0; padding: 20px; }
-  </style>
+<meta charset="UTF-8">
+<title>Love Counter 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial,sans-serif; background:#ffe6f0; color:#660033; text-align:center; padding:30px;}
+.language-switch { margin-bottom: 20px; font-size:16px; }
+.container { max-width:600px; margin:auto; background:white; border-radius:20px; padding:20px; box-shadow:0 0 15px rgba(255,105,180,0.4);}
+h1{color:#ff3399;}
+input[type="text"]{padding:10px;margin:10px;border:2px solid #ff99cc;border-radius:10px;width:80%; font-size:16px;}
+button{background:#ff66b2;color:white;border:none;padding:10px 20px;border-radius:15px;font-size:16px;cursor:pointer; transition:0.3s;}
+button:hover{background:#ff3385;}
+.result-box{background:linear-gradient(135deg,#ff66b2,#ff1a75); color:white; font-size:36px;font-weight:bold;border-radius:20px;text-align:center;margin:20px 0;padding:20px;}
+</style>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjMnVAk8h1C3_YgVKwwO1VqucBvwDMyKg",
-      authDomain: "lovecounterlog-e6517.firebaseapp.com",
-      projectId: "lovecounterlog-e6517",
-      storageBucket: "lovecounterlog-e6517.firebasestorage.app",
-      messagingSenderId: "535148914918",
-      appId: "1:535148914918:web:3df7c3ec705773e3787327",
-      measurementId: "G-XVX1S1XEWF"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBjMnVAk8h1C3_YgVKwwO1VqucBvwDMyKg",
+  authDomain: "lovecounterlog-e6517.firebaseapp.com",
+  projectId: "lovecounterlog-e6517",
+  storageBucket: "lovecounterlog-e6517.firebasestorage.app",
+  messagingSenderId: "535148914918",
+  appId: "1:535148914918:web:3df7c3ec705773e3787327",
+  measurementId: "G-XVX1S1XEWF"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 </head>
 <body>
-  <div class="container">
-    <h1>💖 Love Counter 💖</h1>
-    <input id="nameA" type="text" placeholder="Your Name"><br>
-    <input id="nameB" type="text" placeholder="Your Crush"><br>
-    <button onclick="calculateLove()">Calculate 💕</button>
-    <div class="result-box" id="heartPercent">--%</div>
-  </div>
 
-  <script>
-    function calculateLove() {
-      let nameA = document.getElementById('nameA').value.trim();
-      let nameB = document.getElementById('nameB').value.trim();
-      if(!nameA || !nameB){ alert("Please enter both names!"); return; }
+<!-- Language selector at the top -->
+<div class="language-switch">
+  <label for="langSelect">Language: </label>
+  <select id="langSelect" onchange="changeLanguage()">
+    <option value="en">English</option>
+    <option value="zh">中文</option>
+  </select>
+</div>
 
-      // --- Calculate Love %
-      let combined = nameA + nameB;
-      let letters = [], counts = [];
-      for (let char of combined){
-        if (/[A-Z]/i.test(char) && !letters.includes(char)){
-          let count = (nameA+nameB).split(char).length-1;
-          letters.push(char);
-          counts.push(count);
-        }
-      }
+<div class="container">
+<h1 id="title">💖 Love Counter 💖</h1>
+<input id="nameA" type="text" placeholder="Your Name"><br>
+<input id="nameB" type="text" placeholder="Your Crush"><br>
+<button id="calcBtn" onclick="calculateLove()">Calculate 💕</button>
+<div class="result-box" id="heartPercent">--%</div>
+</div>
 
-      let percentCounts = [...counts];
-      while (percentCounts.length > 2){
-        let next = [];
-        for (let i=0;i<Math.floor(percentCounts.length/2);i++){
-          next.push((percentCounts[i]+percentCounts[percentCounts.length-1-i])%10);
-        }
-        if (percentCounts.length%2===1){
-          next.splice(percentCounts.length/2,0,percentCounts[Math.floor(percentCounts.length/2)]);
-        }
-        percentCounts = next;
-      }
-      let percent = percentCounts.join("");
-      document.getElementById("heartPercent").innerText = percent + "%";
+<script>
+const translations = {
+  en: {
+    title: "💖 Love Counter 💖",
+    nameA: "Your Name",
+    nameB: "Your Crush",
+    button: "Calculate 💕"
+  },
+  zh: {
+    title: "💖 爱情计算器 💖",
+    nameA: "你的名字",
+    nameB: "你的心仪对象",
+    button: "计算 💕"
+  }
+};
 
-      // --- Save to Firestore ---
-      db.collection("loveLog").add({
-        nameA: nameA,
-        nameB: nameB,
-        percent: percent,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        // Redirect to 2nd site
-        window.location.href = `https://cavxin.github.io/resulton/?nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}&percent=${percent}`;
-      }).catch((error)=>{ console.error("Error:", error); });
+function changeLanguage() {
+  const lang = document.getElementById("langSelect").value;
+  document.getElementById("title").innerText = translations[lang].title;
+  document.getElementById("nameA").placeholder = translations[lang].nameA;
+  document.getElementById("nameB").placeholder = translations[lang].nameB;
+  document.getElementById("calcBtn").innerText = translations[lang].button;
+}
+
+function calculateLove(){
+  let nameA = document.getElementById('nameA').value.trim();
+  let nameB = document.getElementById('nameB').value.trim();
+  if(!nameA || !nameB){ alert("Please enter both names!"); return; }
+
+  // Love calculation
+  let combined = nameA + nameB;
+  let letters = [], counts = [];
+  for(let char of combined){
+    if(/[A-Z]/i.test(char) && !letters.includes(char)){
+      let count = (nameA+nameB).split(char).length - 1;
+      letters.push(char);
+      counts.push(count);
     }
-  </script>
+  }
+
+  let percentCounts = [...counts];
+  while(percentCounts.length > 2){
+    let next = [];
+    for(let i=0; i<Math.floor(percentCounts.length/2); i++){
+      next.push((percentCounts[i]+percentCounts[percentCounts.length-1-i]) % 10);
+    }
+    if(percentCounts.length % 2 === 1){
+      next.splice(percentCounts.length/2,0,percentCounts[Math.floor(percentCounts.length/2)]);
+    }
+    percentCounts = next;
+  }
+
+  let percent = percentCounts.join("");
+  document.getElementById("heartPercent").innerText = percent + "%";
+
+  // Document ID = nameA_nameB_percent
+  let safeNameA = nameA.replace(/[^a-zA-Z0-9]/g, "_");
+  let safeNameB = nameB.replace(/[^a-zA-Z0-9]/g, "_");
+  let docId = `${safeNameA}_${safeNameB}_${percent}`;
+
+  // Save to Firebase
+  db.collection("loveLog").doc(docId).set({
+    nameA: nameA,
+    nameB: nameB,
+    percent: percent,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(() => {
+    window.location.href = `resulton.html?percent=${percent}&nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}`;
+  })
+  .catch(error => console.error("Error saving entry:", error));
+}
+</script>
 </body>
 </html>
