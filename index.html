@@ -129,7 +129,7 @@ function calculateLove(){
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   })
   .then(() => {
-    window.location.href = `resulton.html?percent=${percent}&nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}`;
+    window.location.href = `https://cavxin.github.io/resulton/?percent=${percent}&nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}`;
   })
   .catch(error => console.error("Error saving entry:", error));
 }
