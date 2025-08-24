@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Love Result 💖</title>
+  <title>Love Counter 💖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -10,44 +10,134 @@
       background: #ffe6f0;
       color: #660033;
       text-align: center;
-      padding: 50px;
+      padding: 30px;
+      overflow-x: hidden;
+      position: relative;
     }
     .container {
+      max-width: 600px;
+      margin: auto;
       background: white;
       border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      margin: auto;
+      padding: 20px;
       box-shadow: 0 0 15px rgba(255,105,180,0.4);
+      position: relative;
+      z-index: 1;
     }
-    h1 { font-size: 36px; color: #ff3399; }
-    h2 { font-size: 28px; margin: 20px 0; }
-    p { font-size: 20px; margin-top: 20px; }
+    h1 { color: #ff3399; }
+    input[type="text"] {
+      padding: 10px; margin: 10px; border: 2px solid #ff99cc; border-radius: 10px; width: 80%; font-size: 16px;
+    }
+    button {
+      background: #ff66b2; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.3s;
+    }
+    button:hover { background: #ff3385; }
+    .box, .result-box {
+      background: #fff0f5; border-radius: 15px; padding: 15px; box-shadow: inset 0 0 10px rgba(255,182,193,0.5);
+      flex: 1; margin: 10px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;
+    }
+    .flex-row {
+      display: flex; justify-content: center; align-items: stretch; margin-top: 20px;
+      max-width: 700px; margin-left: auto; margin-right: auto; position: relative; z-index: 2;
+    }
+    #steps, #reduction {
+      font-family: monospace; white-space: pre-line; text-align: left; font-size: 14px; overflow-y: auto;
+    }
+    .result-box {
+      background: linear-gradient(135deg, #ff66b2, #ff1a75);
+      color: white; font-size: 36px; font-weight: bold; border-radius: 20px; text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .flex-row { flex-direction: column; }
+      .box, .result-box { width: 90%; margin: 10px auto; height: auto; }
+      button, input[type="text"] { width: 90%; }
+    }
+
+    @media (max-width: 400px) {
+      h1 { font-size: 24px; }
+      .result-box { font-size: 28px; }
+      #steps, #reduction { font-size: 12px; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>💖 Love Result 💖</h1>
-    <h2 id="namesDisplay">Loading...</h2>
-    <p id="percentDisplay"></p>
+    <h1>💖 Love Counter 💖</h1>
+    <p>Enter names to see your love percentage!</p>
+    <input id="nameA" type="text" placeholder="Your Name">
+    <br>
+    <input id="nameB" type="text" placeholder="Your Crush">
+    <br>
+    <button onclick="calculateLove()">Calculate 💕</button>
+
+    <div class="flex-row">
+      <div class="box">
+        <h3>Initial Counts</h3>
+        <div id="steps"></div>
+      </div>
+      <div class="result-box" id="heartPercent">--%</div>
+      <div class="box">
+        <h3>Reduction Steps</h3>
+        <div id="reduction"></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const nameA = params.get("nameA");
-    const nameB = params.get("nameB");
-    const percent = params.get("percent");
+    function calculateLove() {
+      let nameA = document.getElementById('nameA').value.trim();
+      let nameB = document.getElementById('nameB').value.trim();
 
-    if(nameA && nameB){
-      document.getElementById("namesDisplay").innerText = `${nameA} ❤️ ${nameB}`;
-    } else {
-      document.getElementById("namesDisplay").innerText = "No names received";
-    }
+      if(!nameA || !nameB){
+        alert("Please enter both names!");
+        return;
+      }
 
-    if(percent){
-      document.getElementById("percentDisplay").innerText = `Love Percentage: ${percent}%`;
-    } else {
-      document.getElementById("percentDisplay").innerText = "";
+      let combined = nameA + nameB;
+      let letters = [];
+      let counts = [];
+
+      for (let char of combined){
+        if (/[A-Z]/i.test(char)){
+          if (!letters.includes(char)){
+            let count = (nameA+nameB).split(char).length-1;
+            letters.push(char);
+            counts.push(count);
+          }
+        }
+      }
+
+      let stepsText = "";
+      for (let i=0;i<letters.length;i++){
+        stepsText += letters[i] + " → " + counts[i] + (counts[i] === 1 ? " time" : " times") + "\n";
+      }
+      document.getElementById("steps").innerText = stepsText;
+
+      let reductionText = "Seed digits: " + counts.join("") + "\nReduction steps\n";
+      let stepIndex = 0;
+      reductionText += stepIndex + ". " + counts.join("") + "  (start)\n";
+
+      while (counts.length > 2){
+        stepIndex++;
+        let next = [];
+        for (let i=0;i<Math.floor(counts.length/2);i++){
+          next.push((counts[i] + counts[counts.length-1-i]) % 10);
+        }
+        if (counts.length % 2 === 1){
+          next.splice(counts.length/2,0,counts[Math.floor(counts.length/2)]);
+        }
+        counts = next;
+        reductionText += stepIndex + ". " + counts.join("") + (counts.length<=2 ? "  (final)" : "") + "\n";
+      }
+
+      let percent = counts.join("");
+      document.getElementById("reduction").innerText = reductionText;
+      document.getElementById("heartPercent").innerText = percent + "%";
+
+      // Redirect to second site
+      const otherSiteURL = `secondsite.html?nameA=${encodeURIComponent(nameA)}&nameB=${encodeURIComponent(nameB)}&percent=${percent}`;
+      window.location.href = otherSiteURL;
     }
   </script>
 </body>
